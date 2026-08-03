@@ -1,0 +1,27 @@
+# Virtual Environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables (sensitive!)
+.env
+.env.*
+*.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Reports (optional - or keep them)
+reports/*.md
+!reports/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/
