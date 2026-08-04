@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master", "develop"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  lint:
+    name: Lint & Type-Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Ruff — lint
+        run: python -m ruff check . --output-format=github
+
+      - name: Ruff — format check
+        run: python -m ruff format --check .
+
+      - name: Mypy — type check
+        run: python -m mypy graph/ app.py config.py db.py owasp_mapping.py --ignore-missing-imports
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    env:
+      # Dummy values so config validation doesn't fail during tests
+      GROQ_API_KEY: "test-key-not-real"
+      MODEL_NAME: "llama-3.3-70b-versatile"
+      ATTACK_API_KEY: "test-key-not-real"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests with coverage
+        run: python -m pytest tests/ -v --tb=short --cov=graph --cov=app --cov=config --cov=db --cov=owasp_mapping --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false

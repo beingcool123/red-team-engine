@@ -1,9 +1,11 @@
-from langgraph.graph import StateGraph, START, END
-from .state import RedTeamState
-from .nodes.planner import planner_node
+from langgraph.graph import END, START, StateGraph
+
 from .nodes.executor import executor_node
 from .nodes.judge import judge_node
+from .nodes.planner import planner_node
 from .nodes.reporter import reporter_node
+from .state import RedTeamState
+
 
 def create_workflow():
     workflow = StateGraph(RedTeamState)
